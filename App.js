@@ -19,9 +19,13 @@ app.use(cors({
 app.use(bodyParser.json())
 const productRoute = require("./api/route/productData")
 const assignmentRoute = require("./api/route/assignment")
-const loginRoute = require("./api/route/login")
+const loginRoute = require("./api/route/loginRoute")
+const logoutRoute = require("./api/route/logoutRoute")
+const userRoute = require("./api/route/userRoute")
 const ImageRoute = require("./api/route/imageSlider")
 const upload = require("./multer/multer")
+const categoryRouter = require('./api/route/categoryroute');
+
 
 
 // const { urlencoded } = require("body-parser")
@@ -44,10 +48,12 @@ app.use('/uploads',express.static('uploads'))
 app.use("/product", productRoute)
 app.use("/assignment", assignmentRoute)
 app.use("/login", loginRoute)
+app.use("/logout", logoutRoute)
+app.use("/User", userRoute)
 app.use("/image", ImageRoute)
+app.use('/categories', categoryRouter);
 
-// app.use("/upload",uploadRoute)
-// app.use("/upload",uploadRoute)
+
 
 // Default API
 app.use("/", (req, res) => {
