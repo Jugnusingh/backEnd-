@@ -18,13 +18,16 @@ app.use(cors({
 //Middlewares
 app.use(bodyParser.json())
 const productRoute = require("./api/route/productData")
-const assignmentRoute = require("./api/route/assignment")
-const loginRoute = require("./api/route/loginRoute")
-const logoutRoute = require("./api/route/logoutRoute")
-const userRoute = require("./api/route/userRoute")
+// const assignmentRoute = require("./api/route/assignment")
+const adminlogin = require("./api/route/adminRoute")
+// const loginRoute = require("./api/route/loginRoute")
+// const logoutRoute = require("./api/route/logoutRoute")
+// const userRoute = require("./api/route/userRoute")
 const ImageRoute = require("./api/route/imageSlider")
-const upload = require("./multer/multer")
+// const upload = require("./multer/multer")
 const categoryRouter = require('./api/route/categoryroute');
+const contactRouter = require("./api/route/contactRoute")
+const blogRoutes = require('./api/route/blogRoute');
 
 
 
@@ -46,12 +49,15 @@ mongoose.connection.on("connected", (connected) => {
 // API
 app.use('/uploads',express.static('uploads'))
 app.use("/product", productRoute)
-app.use("/assignment", assignmentRoute)
-app.use("/login", loginRoute)
-app.use("/logout", logoutRoute)
-app.use("/User", userRoute)
+// app.use("/assignment", assignmentRoute)
+app.use('/admin',adminlogin)
+// app.use("/login", loginRoute)
+// app.use("/logout", logoutRoute)
+// app.use("/User", userRoute)
 app.use("/image", ImageRoute)
 app.use('/categories', categoryRouter);
+app.use("/contact",contactRouter)
+app.use('/blog', blogRoutes);
 
 
 
