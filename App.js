@@ -27,7 +27,7 @@ const ImageRoute = require("./api/route/imageSlider")
 // const upload = require("./multer/multer")
 const categoryRouter = require('./api/route/categoryroute');
 const contactRouter = require("./api/route/contactRoute")
-const blogRoutes = require('./api/route/blogRoute');
+// const blogRoutes = require('./api/route/blogRoute');
 
 
 
@@ -57,7 +57,7 @@ app.use('/admin',adminlogin)
 app.use("/image", ImageRoute)
 app.use('/categories', categoryRouter);
 app.use("/contact",contactRouter)
-app.use('/blog', blogRoutes);
+// app.use('/blog', blogRoutes);
 
 
 
