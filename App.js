@@ -18,7 +18,6 @@ app.use(cors({
 //Middlewares
 app.use(bodyParser.json())
 const productRoute = require("./api/route/productData")
-// const assignmentRoute = require("./api/route/assignment")
 const adminlogin = require("./api/route/adminRoute")
 // const loginRoute = require("./api/route/loginRoute")
 // const logoutRoute = require("./api/route/logoutRoute")
