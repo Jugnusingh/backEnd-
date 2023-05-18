@@ -12,11 +12,12 @@ router.get("/", async (req, res) => {
             })
         }).catch((error) => {
             console.log(error);
-            res.status(200).json({
+            res.status(500).json({
                 error: error
             })
         })
 })
+
 router.post("/", upload.fields([{ name: 'Image', maxCount: 1 }, { name: 'Pdf', maxCount: 1 }]), (req, res) => {
     const { Title, Description, Price, Category } = req.body;
    
@@ -44,4 +45,21 @@ router.post("/", upload.fields([{ name: 'Image', maxCount: 1 }, { name: 'Pdf', m
         })
 })
 
-module.exports = router
+router.delete('/:productId', (req, res) => {
+    const { productId } = req.params;
+  
+    Product.findByIdAndRemove(productId)
+      .then(() => {
+        res.status(200).json({
+          message: 'Product deleted successfully',
+        });
+      })
+      .catch((error) => {
+        console.log(error);
+        res.status(500).json({
+          error: error,
+        });
+      });
+  });
+
+module.exports = router;
