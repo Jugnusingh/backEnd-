@@ -22,8 +22,9 @@ const adminlogin = require("./api/route/adminRoute")
 // const userRoute = require("./api/route/userRoute")
 const ImageRoute = require("./api/route/imageSlider")
 const categoryRouter = require('./api/route/categoryroute');
-const contactRouter = require("./api/route/contactRoute")
+const contactRouter = require("./api/route/mailerRoute")
 const blogRoutes = require('./api/route/blogRoute')
+
 
 
 
@@ -49,7 +50,7 @@ app.use('/admin',adminlogin)
 // app.use("/User", userRoute)
 app.use("/image", ImageRoute)
 app.use('/categories', categoryRouter);
-app.use("/contact",contactRouter)
+app.use("/Contact",contactRouter)
 app.use('/Blog', blogRoutes);
 
 
