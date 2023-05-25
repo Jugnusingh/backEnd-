@@ -14,7 +14,7 @@ router.post('/', async (req, res) => {
     requireTLS:true,
     auth: {
       user: 'abhisingh1906@gmail.com',
-      pass: '12/196@Jugnu',
+      pass: 'type your password',
     },
   });
 
