@@ -23,7 +23,8 @@
     "multer": "^1.4.5-lts.1",
     "nodemailer": "^6.9.2",
     "nodemon": "^2.0.21",
-    "path": "^0.12.7"
+    "path": "^0.12.7",
+    "payu": "^0.0.0"
   },
   "description": ""
 }
