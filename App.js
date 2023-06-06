@@ -3,6 +3,7 @@ const app = express()
 const mongoose = require("mongoose")
 const bodyParser = require("body-parser")
 const cors = require("cors")
+const dotenv=require("dotenv");
 // const multer = require('multer');
 
 //---------------Mulater---------------//
@@ -14,45 +15,43 @@ app.use(cors({
   origin: "http://localhost:3000"
 }));
 
+//environment variables
+dotenv.config();
+
 
 //Middlewares
 app.use(bodyParser.json())
 const productRoute = require("./api/route/productData")
 const adminlogin = require("./api/route/adminRoute")
-// const userRoute = require("./api/route/userRoute")
 const ImageRoute = require("./api/route/imageSlider")
 const categoryRouter = require('./api/route/categoryroute');
 const contactRouter = require("./api/route/mailerRoute")
 const blogRoutes = require('./api/route/blogRoute')
+const payment =require('./api/route/payment')
 
 
-
-
-// const { urlencoded } = require("body-parser")
-//mongodb+srv://Gazal:Gazal%4017flt@cluster0.gu7qtpr.mongodb.net/DalalTechnologies
-// mongodb://localhost:27017/DalalTechnologies
 // Database connect
-mongoose.connect("mongodb+srv://Gazal:Gazal%4017flt@cluster0.gu7qtpr.mongodb.net/DalalTechnologies", {
+mongoose.connect(process.env.MONGODB_URI, {
   useUnifiedTopology: true,
-  useNewUrlParser: true
-})
+  useNewUrlParser: true,
+});
 mongoose.connection.on("error", (error) => {
-  console.log("Error DB is not connected")
-})
+  console.log("Error DB is not connected");
+});
 mongoose.connection.on("connected", (connected) => {
-  console.log("DB is connected")
-})
+  console.log("Data Base is connected");
+});
+
 
 // API
 app.use('/uploads',express.static('uploads'))
 app.use("/product", productRoute)
 app.use('/admin',adminlogin)
-// app.use("/User", userRoute)
 app.use("/image", ImageRoute)
 app.use('/categories', categoryRouter);
 app.use("/Contact",contactRouter)
 app.use('/Blog', blogRoutes);
-
+app.use('/pay',payment)
 
 
 // Default API
