@@ -28,6 +28,7 @@ const categoryRouter = require('./api/route/categoryroute');
 const contactRouter = require("./api/route/mailerRoute")
 const blogRoutes = require('./api/route/blogRoute')
 const payment =require('./api/route/payment')
+const downloadRouter = require('./api/route/downloadRouter');
 
 
 // Database connect
@@ -52,7 +53,7 @@ app.use('/categories', categoryRouter);
 app.use("/Contact",contactRouter)
 app.use('/Blog', blogRoutes);
 app.use('/pay',payment)
-
+app.use('/Download', downloadRouter); // Add this line
 
 // Default API
 app.use("/", (req, res) => {

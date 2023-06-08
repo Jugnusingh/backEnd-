@@ -13,7 +13,7 @@ const razorpay = new Razorpay({
 // Endpoint for creating an order
 router.post('/orders', async (req, res) => {
   try {
-    const { amount, currency } = req.body;
+    const {productId, amount, currency } = req.body;
 
     // Generate a unique receipt ID using the crypto module
     const receipt = crypto.randomBytes(4).toString('hex');
@@ -22,6 +22,7 @@ router.post('/orders', async (req, res) => {
       amount: amount * 100, // Razorpay accepts the amount in paise, so multiply by 100 for rupees
       currency: currency,
       receipt: receipt,
+      productId: productId,
     };
 
     razorpay.orders.create(options, (error, order) => {
