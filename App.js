@@ -15,6 +15,7 @@ app.use(cors({
   origin: "http://localhost:3000"
 }));
 
+
 //environment variables
 dotenv.config();
 
@@ -27,8 +28,7 @@ const ImageRoute = require("./api/route/imageSlider")
 const categoryRouter = require('./api/route/categoryroute');
 const contactRouter = require("./api/route/mailerRoute")
 const blogRoutes = require('./api/route/blogRoute')
-const payment =require('./api/route/payment')
-const downloadRouter = require('./api/route/downloadRouter');
+const paymentRouter =require('./api/route/paymentRouter')
 
 
 // Database connect
@@ -43,7 +43,6 @@ mongoose.connection.on("connected", (connected) => {
   console.log("Data Base is connected");
 });
 
-
 // API
 app.use('/uploads',express.static('uploads'))
 app.use("/product", productRoute)
@@ -52,8 +51,7 @@ app.use("/image", ImageRoute)
 app.use('/categories', categoryRouter);
 app.use("/Contact",contactRouter)
 app.use('/Blog', blogRoutes);
-app.use('/pay',payment)
-app.use('/Download', downloadRouter); // Add this line
+app.use('/pay', paymentRouter);
 
 // Default API
 app.use("/", (req, res) => {
