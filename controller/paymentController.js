@@ -1,7 +1,7 @@
 
 const Razorpay = require('razorpay');
 const Order = require('../schema/orderSchema');
-const crypto= require('crypto')
+const crypto = require('crypto')
 
 // Initialize Razorpay with your API credentials
 const razorpay = new Razorpay({
@@ -12,7 +12,7 @@ const razorpay = new Razorpay({
 // Create a new order
 const createOrder = async (req, res) => {
     try {
-        const { amount, currency, productIds, title } = req.body;
+        const { amount, currency } = req.body;
         // Generate a unique receipt ID using the crypto module
         const receipt = crypto.randomBytes(4).toString('hex');
         const options = {
@@ -27,8 +27,8 @@ const createOrder = async (req, res) => {
             }
             // Store the order data in the database
             const newOrder = new Order({
-                title: title,
-                productIds: productIds,
+                // title: title,
+                // productIds: productIds,
                 amount: order.amount,
                 currency: order.currency,
                 receipt: order.receipt,
@@ -67,7 +67,23 @@ const verifyPayment = async (req, res) => {
         res.status(500).json({ error: 'Failed to verify payment' });
     }
 };
+//get order 
+const getOrder = async (req, res) => {
+    console.log(req, res)
+    Order.find()
+        .then((result) => {
+            res.status(200).json({
+                orderData: result
+            })
+        }).catch((error) => {
+            console.log(error);
+            res.status(500).json({
+                error: error
+            })
+        })
+}
 module.exports = {
     createOrder,
-    verifyPayment
+    verifyPayment,
+    getOrder,
 };

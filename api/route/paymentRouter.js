@@ -10,14 +10,7 @@ router.post('/orders', paymentController.createOrder);
 router.post('/verify', paymentController.verifyPayment);
 
 // Get all orders
-router.get('/orders', async (req, res) => {
-  try {
-    const orders = await Order.find();
-    res.json(orders);
-  } catch (error) {
-    console.error('Error retrieving orders:', error);
-    res.status(500).json({ error: 'Unable to retrieve orders' });
-  }
-});
+router.get('/orders', paymentController.getOrder);
+
 
 module.exports = router;
