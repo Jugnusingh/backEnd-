@@ -1,11 +1,11 @@
 const mongoose = require('mongoose');
 const orderSchema = new mongoose.Schema({
-  // title:{
-  //   type:Array
-  // },
-  //   productIds: {
-  //   type: Array,
-  // },
+  title:{
+    type:String,
+  },
+    productIds: {
+    type: String,
+  },
   amount: {
     type: Number,
     required: true,

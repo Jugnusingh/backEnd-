@@ -12,7 +12,7 @@ const razorpay = new Razorpay({
 // Create a new order
 const createOrder = async (req, res) => {
     try {
-        const { amount, currency } = req.body;
+        const { amount, currency,title ,productIds} = req.body;
         // Generate a unique receipt ID using the crypto module
         const receipt = crypto.randomBytes(4).toString('hex');
         const options = {
@@ -27,9 +27,9 @@ const createOrder = async (req, res) => {
             }
             // Store the order data in the database
             const newOrder = new Order({
-                // title: title,
-                // productIds: productIds,
-                amount: order.amount,
+                title: title,
+                productIds: productIds,
+                amount: order.amount/100,
                 currency: order.currency,
                 receipt: order.receipt,
                 razorpayOrderId: order.id,
