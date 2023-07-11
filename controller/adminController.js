@@ -1,7 +1,9 @@
 const adminSchema = require('../schema/adminSchema');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const SECREAT_KEY = 'NotesApi';
+require('dotenv').config();
+
+const SECRET_KEY = process.env.SECRET_KEY;
 
 const signup = async (req, res) => {
   const { username, email, password } = req.body;
@@ -22,7 +24,7 @@ const signup = async (req, res) => {
       username: username,
     });
 
-    const token = jwt.sign({ email: newAdmin.email, id: newAdmin._id }, SECREAT_KEY);
+    const token = jwt.sign({ email: newAdmin.email, id: newAdmin._id }, SECRET_KEY);
 
     res.status(201).json({ user: newAdmin, token: token });
   } catch (error) {

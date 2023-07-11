@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const nodemailer = require('nodemailer');
 const router = express.Router();
@@ -8,20 +9,20 @@ router.post('/', async (req, res) => {
 
   // Create a Nodemailer transporter
   const transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 587, // or the appropriate port for your email provider
-    secure: false, // false if you're using a non-SSL/TLS connection
-    requireTLS:true,
+    host: process.env.EMAIL_HOST,
+    port: process.env.EMAIL_PORT,
+    secure: process.env.EMAIL_SECURE === 'true',
+    requireTLS: process.env.EMAIL_REQUIRE_TLS === 'true',
     auth: {
-      user: 'abhisingh1906@gmail.com',
-      pass: '12/196@Jugnu',
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASSWORD,
     },
   });
 
   // Prepare the email
   const mailOptions = {
-    from: 'abhisingh1906@gmail.com',
-    to: 'jugnu908@gmail.com',
+    from: process.env.EMAIL_FROM,
+    to: process.env.EMAIL_TO,
     subject: `Contact Form Submission - ${username}`,
     text: `Name: ${username}\nEmail: ${email}\nSubject: ${subject}\nMessage: ${message}`,
   };
