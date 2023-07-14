@@ -3,6 +3,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
+
 const SECRET_KEY = process.env.SECRET_KEY;
 
 const signup = async (req, res) => {
@@ -53,7 +54,7 @@ const signin = async (req, res) => {
       });
     }
 
-    const token = jwt.sign({ email: existingAdmin.email, id: existingAdmin._id }, SECREAT_KEY);
+    const token = jwt.sign({ email: existingAdmin.email, id: existingAdmin._id }, SECRET_KEY);
 
     res.status(200).json({ user: existingAdmin, token: token });
   } catch (error) {
