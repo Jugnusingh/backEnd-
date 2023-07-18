@@ -17,6 +17,28 @@ app.use(cors({
 }));
 
 
+
+// Add the allowedOrigins array here
+const allowedOrigins = ["http://203.123.33.138"];
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+// CORS configuration
+app.use(cors({
+  origin: function (origin, callback) {
+    if (allowedOrigins.includes(origin) || !origin) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  }
+}));
+
+
+
+
+
 //environment variables
 dotenv.config();
 
