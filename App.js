@@ -8,15 +8,13 @@ const dotenv=require("dotenv");
 
 //---------------Mulater---------------//
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+// app.use(bodyParser.json());
+// app.use(bodyParser.urlencoded({ extended: true }));
 
 
-app.use(cors({
-  origin: "http://localhost:3000"
-}));
-
-
+// app.use(cors({
+//   origin: "http://localhost:3000"
+// }));
 
 // Add the allowedOrigins array here
 const allowedOrigins = ["http://203.123.33.138"];
