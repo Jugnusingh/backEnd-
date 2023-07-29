@@ -14,7 +14,10 @@ const storage = multer.diskStorage({
     cb(null, file.fieldname + "-" + uniqueSuffix + fileExtension);
   },
 });
+<<<<<<< HEAD
 
+=======
+>>>>>>> 5f8ffd7 (add some photo from backend)
 const upload = multer({ storage: storage });
 
 // GET all images

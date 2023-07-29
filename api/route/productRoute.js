@@ -17,6 +17,8 @@ router.get("/", async (req, res) => {
   }
 });
 
+
+
 router.post("/", upload.fields([{ name: 'Image', maxCount: 1 }, { name: 'Pdf', maxCount: 1 }]), (req, res) => {
     const { Title, Description, Price, Category } = req.body;
   
