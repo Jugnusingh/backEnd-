@@ -1,89 +1,192 @@
-
-const Razorpay = require('razorpay');
+const axios = require('axios');
 const Order = require('../schema/orderSchema');
-const crypto = require('crypto')
+const crypto = require('crypto');
 
-// Initialize Razorpay with your API credentials
-const razorpay = new Razorpay({
-    key_id: process.env.RAZORPAY_KEY_ID,
-    key_secret: process.env.RAZORPAY_KEY_SECRET,
-});
+// Your merchant ID
+const merchantId = process.env.MERCHANT_ID;
+const pa = process.env.VPA;
+const googlePayVerificationUrl = process.env.GoogleApiUrl;
 
-// Create a new order
-const createOrder = async (req, res) => {
-    try {
-        const { amount, currency,title ,productIds} = req.body;
-        // Generate a unique receipt ID using the crypto module
-        const receipt = crypto.randomBytes(4).toString('hex');
-        const options = {
-            amount: amount * 100, // Razorpay accepts the amount in paise, so multiply by 100 for rupees
-            currency: currency,
-            receipt: receipt,
-        };
-        razorpay.orders.create(options, async (error, order) => {
-            if (error) {
-                console.log(error);
-                return res.status(500).json({ message: 'Something went wrong!' });
-            }
-            // Store the order data in the database
-            const newOrder = new Order({
-                title: title,
-                productIds: productIds,
-                amount: order.amount/100,
-                currency: order.currency,
-                receipt: order.receipt,
-                razorpayOrderId: order.id,
-            });
-            await newOrder.save();
-            res.status(200).json(order);
-        });
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({ message: 'Internal Server Error!' });
-    }
-};
-// Verify the payment
-const verifyPayment = async (req, res) => {
-    try {
-        const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
-        const text = `${razorpay_order_id}|${razorpay_payment_id}`;
-        const generatedSignature = crypto
-            .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET)
-            .update(text)
-            .digest('hex');
-        if (generatedSignature === razorpay_signature) {
-            // Update the order status in the database
-            const order = await Order.findOne({ razorpayOrderId: razorpay_order_id });
-            if (order) {
-                order.status = 'paid';
-                await order.save();
-            }
-            res.status(200).json({ message: 'Payment verified successfully' });
-        } else {
-            res.status(400).json({ message: 'Payment verification failed' });
+// Controller for creating a new order
+exports.createOrder = async (req, res) => {
+  try {
+    const { totalAmount, productIds, title, name, email, phone } = req.body;
+
+    // Generate a unique order ID using timestamp and random string
+    const orderTimestamp = new Date().getTime();
+    const randomString = crypto.randomBytes(4).toString('hex');
+    const orderID = `ORDER_${orderTimestamp}_${randomString}`;
+    const currency = 'INR'; // Indian Rupees
+    const locale = 'en-IN'; // English (India)
+
+    // Construct your Google Pay session object for UPI payments
+    const googlePaySession = {
+      apiVersion: 2,
+      apiVersionMinor: 0,
+      paymentRequest: {
+        apiVersion: 2,
+        apiVersionMinor: 0,
+        allowedPaymentMethods: [
+          {
+            type: 'UPI',
+            parameters: {
+              pa:pa, // Replace with your UPI Virtual Payment Address
+              pn: 'DalalTechnologies', // Replace with recipient's name
+            },
+          },
+          {
+            type: 'CARD',
+            parameters: {
+              allowedAuthMethods: ['PAN_ONLY', 'CRYPTOGRAM_3DS'],
+              allowedCardNetworks: ['AMEX', 'DISCOVER', 'JCB', 'MASTERCARD', 'VISA', 'RUPE'],
+            },
+          },
+        ],
+        merchantInfo: {
+          merchantId: merchantId, // Include your merchant ID
+          merchantName: 'Your Merchant Name',
+        },
+        transactionInfo: {
+          totalPriceStatus: 'FINAL',
+          totalPrice: String(totalAmount),
+          currencyCode: currency,
+        },
+      },
+      onLoadPaymentData: async (paymentData) => {
+        try {
+          // Logic to verify payment using Google Pay API
+          const paymentVerificationResponse = await axios.post(googlePayVerificationUrl, {
+            paymentId: paymentData.paymentId,
+            orderId: orderID,
+          });
+          const paymentStatus = paymentVerificationResponse.data.status;
+
+          if (paymentStatus === 'success') {
+            // Handle successful payment
+            // Update the order status and payment details in your database
+            await Order.findOneAndUpdate(
+              { _id: orderID, status: 'pending' },
+              {
+                $set: {
+                  paymentId: paymentData.paymentId,
+                  productIds,
+                  title,
+                  amount: totalAmount,
+                  status: paymentStatus,
+                },
+              },
+              { new: true }
+            );
+          } else {
+            // Handle failed payment
+            handleFailedPayment(orderID, paymentData.paymentId);
+          }
+        } catch (error) {
+          // Handle error
+          console.error('Payment verification error:', error);
+          handleFailedPayment(orderID, paymentData.paymentId);
         }
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({ error: 'Failed to verify payment' });
+      },
+    };
+
+    const orderData = {
+      id: orderID,
+      amount: totalAmount,
+      currency: currency,
+      locale: locale,
+      productIds: productIds,
+      title: title,
+      name: name,
+      email: email,
+      phone: phone,
+      googlePaySession: googlePaySession,
+    };
+
+    res.status(201).json(orderData);
+  } catch (error) {
+    console.error('Error creating order:', error);
+    res.status(500).json({ error: 'Failed to create order' });
+  }
+};
+
+exports.verifyPayment = async (req, res) => {
+  try {
+    const { paymentId, orderId } = req.body;
+
+    // Logic to verify payment using Google Pay API
+    const paymentVerificationResponse = await axios.post('YOUR_GOOGLE_PAY_VERIFICATION_URL', {
+      paymentId,
+      orderId,
+    });
+
+    const paymentStatus = paymentVerificationResponse.data.status; // Payment status from API
+
+    // Store payment data in the Order schema if payment is successful
+    if (paymentStatus === 'success') {
+      try {
+        const updatedOrder = await Order.findOneAndUpdate(
+          { _id: orderId, status: 'pending' }, // Update criteria
+          {
+            $set: {
+              paymentId,
+              status: paymentStatus,
+            },
+          },
+          { new: true }
+        );
+
+        if (!updatedOrder) {
+          handleFailedPayment(orderId, paymentId, 'Order not found or already processed'); // Handle if order is not found or already processed
+        }
+      } catch (error) {
+        console.error('Error updating order:', error); // Log the error
+        res.status(500).json({ error: 'Failed to update order' }); // Return error response to the client
+        return;
+      }
+    } else {
+      handleFailedPayment(orderId, paymentId, 'Payment verification failed'); // Handle failed payment verification
     }
+
+    res.json({ status: paymentStatus }); // Return payment status to the client
+  } catch (error) {
+    console.error('Error verifying payment:', error); // Log the error
+    res.status(500).json({ error: 'Failed to verify payment' }); // Return error response to the client
+  }
 };
-//get order 
-const getOrder = async (req, res) => {
-    console.log(req, res)
-    Order.find()
-        .then((result) => {
-            res.status(200).json({
-                orderData: result
-            })
-        }).catch((error) => {
-            console.log(error);
-            res.status(500).json({
-                error: error
-            })
-        })
-}
-module.exports = {
-    createOrder,
-    verifyPayment,
-    getOrder,
+
+// Function to handle failed payment verification or order processing
+const handleFailedPayment = async (orderId, paymentId, errorMessage) => {
+  try {
+    // Update the order status to 'failed' or take appropriate action
+    await Order.findOneAndUpdate(
+      { _id: orderId, status: 'pending' },
+      {
+        $set: {
+          status: 'failed',
+        },
+      },
+      { new: true }
+    );
+
+    // Log the failed payment or order processing
+    console.error(errorMessage, 'for order:', orderId, 'Payment ID:', paymentId);
+  } catch (error) {
+    console.error('Error handling failed payment:', error);
+  }
 };
+
+  // Controller for getting all orders
+  exports.getOrder = async (req, res) => {
+    try {
+      // Logic to get all orders
+      const orders = [
+        // Order data
+      ];
+  
+      res.json(orders);
+    } catch (error) {
+      console.error('Error getting orders:', error);
+      res.status(500).json({ error: 'Failed to get orders' });
+    }
+  };
+

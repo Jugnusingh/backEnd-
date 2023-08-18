@@ -19,17 +19,18 @@ router.get("/", async (req, res) => {
 
 
 
-router.post("/", upload.fields([{ name: 'Image', maxCount: 1 }, { name: 'Pdf', maxCount: 1 }]), (req, res) => {
-    const { Title, Description, Price, Category } = req.body;
-  
-    const product = new Product({
-      Title,
-      Description,
-      Price,
-      Category,
-      Image: req.files['Image'][0].filename,
-      Pdf: req.files['Pdf'][0].filename,
-    });
+router.post("/", upload.fields([{ name: 'image', maxCount: 1 }, { name: 'pdf', maxCount: 1 }]), (req, res) => {
+  const { Title, Description, Price, Category } = req.body;
+
+  const product = new Product({
+    Title,
+    Description,
+    Price,
+    Category,
+    Image: req.files['image'][0].filename,
+    Pdf: req.files['pdf'][0].filename,
+  });
+
   
     product.save()
       .then((result) => {
