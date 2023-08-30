@@ -56,7 +56,7 @@ app.use('/pay', paymentRouter);
 // Default API
 app.use("/", (req, res) => {
   res.status(404).json({
-    msg: "Error 404 Page is not found"
+    msg: "Error 404 Page is not found aata"
   });
 });
 
