@@ -3,8 +3,6 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 exports.createCheckoutSession = async (req, res) => {
     try {
         const { products } = req.body;
-        console.log(products,"product data ")
-
         const lineItems = products.map((product) => ({
             price_data: {
                 currency: "inr",
@@ -15,8 +13,6 @@ exports.createCheckoutSession = async (req, res) => {
             },
             quantity: 1,
         }));
-        console.log(lineItems,"product data hai")
-
         const session = await stripe.checkout.sessions.create({
           payment_method_types: ["card"],
           line_items: lineItems,
