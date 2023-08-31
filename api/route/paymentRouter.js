@@ -2,6 +2,6 @@ const express = require('express');
 const router = express.Router();
 const paymentController = require('../../controller/paymentController');
 
-router.post("/createPaymentSession", paymentController.createPaymentSession);
-
+// Define a route to create a payment intent
+router.post("/createCheckoutSession", paymentController.createCheckoutSession);
 module.exports = router;

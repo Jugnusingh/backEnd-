@@ -1,27 +1,29 @@
-// Import the Stripe library and configure it with your secret key
-const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
-exports.createPaymentSession = async (req, res) => {
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+
+exports.createCheckoutSession = async (req, res) => {
     try {
         const { products } = req.body;
+        console.log(products,"product data ")
 
         const lineItems = products.map((product) => ({
             price_data: {
                 currency: "inr",
                 product_data: {
-                    name: product.dish,
-                    images: [product.imgdata]
+                    name: product.productName,
                 },
-                unit_amount: product.price * 100,
+                unit_amount: Math.round(product.totalAmount * 100),
             },
-            quantity: product.qnty
+            quantity: 1,
         }));
+        console.log(lineItems,"product data hai")
 
         const session = await stripe.checkout.sessions.create({
-            payment_method_types: ["card"],
-            line_items: lineItems,
-            mode: "payment",
-            success_url: process.env.SUCCESS_URL,
-            cancel_url: process.env.CANCEL_URL,
+          payment_method_types: ["card"],
+          line_items: lineItems,
+          mode: 'payment',
+          success_url: 'http://localhost:3000/success',
+          cancel_url: 'http://localhost:3000/cancel',
+        
         });
 
         res.json({ id: session.id });
