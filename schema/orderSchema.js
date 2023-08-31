@@ -1,26 +1,30 @@
 const mongoose = require('mongoose');
+
 const orderSchema = new mongoose.Schema({
-    title: {
-        type: String,
-    },
-    productIds: {
-        type: String,
-    },
-    amount: {
-        type: Number,
-        required: true,
-    },
-    currency: {
+    stripeSessionId: {
         type: String,
         required: true,
     },
-    stripePaymentIntentId: {
-        type: String, // Use this field to store the Stripe PaymentIntent ID
-        required: true,
-    },
-    status: {
+    paymentStatus: {
         type: String,
+        enum: ['pending', 'completed', 'failed'],
         default: 'pending',
+    },
+    productName: {
+        type: String,
+        required: true,
+    },
+    userEmail: {
+        type: String,
+        required: true,
+    },
+    userName: {
+        type: String,
+        required: true,
+    },
+    userPhone: {
+        type: String,
+        required: true,
     },
     createdAt: {
         type: Date,
@@ -29,4 +33,5 @@ const orderSchema = new mongoose.Schema({
 });
 
 const Order = mongoose.model('Order', orderSchema);
+
 module.exports = Order;
