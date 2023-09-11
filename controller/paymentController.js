@@ -1,5 +1,4 @@
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
-// const stripe = require("stripe")(process.env.TEST_SECRET_KEY);
 const Order = require('../schema/orderSchema'); // Import your Mongoose model for orders
 
 exports.createCheckoutSession = async (req, res) => {
@@ -19,10 +18,11 @@ exports.createCheckoutSession = async (req, res) => {
             payment_method_types: ["card"],
             line_items: lineItems,
             mode: 'payment',
-            success_url: 'http://localhost:3000/success',
+            success_url: 'https://dalaltechnologies.in/download',
             cancel_url: 'http://localhost:3000/cancel',
+            
         });
-
+       console.log(session,"session mai kya aaya ")
         // Save order data to your database
         const order = await Order.create({
             stripeSessionId: session.id,

@@ -1,10 +1,6 @@
 const express = require('express');
 const multer = require('multer');
 
-
-
-
-
 // Configure Multer to handle file uploads
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -19,3 +15,5 @@ const storage = multer.diskStorage({
 
 
   module.exports = upload;
+
+ 
